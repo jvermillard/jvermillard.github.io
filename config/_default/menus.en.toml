@@ -15,9 +15,3 @@
   weight = 300
   identifier = "portfolio"
   url = "/portfolio/"
-
-  [[footer]]
-  name = "imprint"
-  weight = 1
-  identifier = "imprint"
-  url = "/imprint/"
