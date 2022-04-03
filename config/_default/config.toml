@@ -1,6 +1,6 @@
 baseURL = 'http://vermillard.com/'
 title = "Website of Julien Vermillard"
-copyright = "2022"
+copyright = "2021-{{ YEAR }}"
 # theme as hugo module
 #theme = "github.com/lxndrblz/anatole"
 # theme as git submodule

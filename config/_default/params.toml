@@ -1,6 +1,6 @@
 title = "About Me"
 author = "Julien Vermillard"
-copyright = "2022"
+copyright = "2021 - {{ YEAR }}"
 description = "Julien Vermillard"
 profilePicture = "images/profile.png"
 keywords = ""
