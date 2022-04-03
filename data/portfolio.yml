@@ -1,0 +1,66 @@
+portfolioitems:
+  # portfolio category
+  - title: Commercial products
+    portfolioitem:
+      - name: 'Low/No Code IoT solutions: Octave'
+        description: 'All included SaaS and IoT hardware to extract, orchestrate, and act on data from your industrial assets to the cloud.'
+        image: '/images/portfolio/octave.gif'
+        link: https://www.sierrawireless.com/octave
+        tags:
+          - IoT
+          - No Code
+          - Embedded software
+          - Edge computing
+          - Cloud
+        status: 'Current'
+        start: '2018'
+      - name: 'IoT device management platform'
+        description: 'Capture and exploit data from any device deployed in the field, and manage them at scale: configuration, updates and monitoring.'
+        image: '/images/portfolio/airvantage.jpeg'
+        link: https://www.sierrawireless.com/
+        tags:
+          - IoT
+          - Device Management
+          - Cloud
+        status: 'Current'
+        start: '2011'
+      - name: Industrial Voice-over-IP
+        image: '/images/portfolio/atvoip.jpeg'
+        link: https://archean.tech/
+        description: 'Safty and public address focused solution for large building (nuclear plants, power plants, airports, train-station etc.)'
+        tags:
+          - VoIP
+          - low latency
+        status: 'Finished'
+        start: '2005'
+        end: '2011'
+  # portfolio category
+  - title: Open Source projects
+    portfolioitem:
+      - name: Eclipse Leshan
+        image: '/images/portfolio/eclipse-leshan.png'
+        link: https://eclipse.org/leshan
+        description: 'Leshan provides libraries that help people develop their own Lightweight M2M server and client.'
+        tags:
+          - Java
+          - LWM2M
+          - Eclipse Foundation
+          - Internet-of-Things
+      - name: Eclipse Californium
+        image: '/images/portfolio/eclipse-californium.png'
+        link: https://eclipse.org/californium
+        description: 'Californium is a powerful CoAP framework targeting back-end services communicating with smaller Internet of Things devices.'
+        tags:
+          - Java
+          - CoAP
+          - Eclipse Foundation
+          - Internet-of-Things
+          - DTLS
+      - name: Apache MINA
+        image: '/images/portfolio/apache-mina.png'
+        link: https://mina.apache.org/
+        description: 'High performance, high scalability network programming framework in Java'
+        tags:
+          - Java
+          - Apache
+          - Networking
