@@ -73,3 +73,9 @@ icon = "fas fa-envelope"
 title = "e-mail"
 url = "mailto:julien@vermillard.com"
 
+[[socialIcons]]
+icon = "fas fa-file-pdf"
+title = "resume"
+url = "/documents/cv.pdf"
+
+
