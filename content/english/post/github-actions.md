@@ -19,7 +19,6 @@ Avoid on target testing as much as possible! It’s slow and difficult to keep s
 
 ![Test-Driven Development for embedded C](/images/tddfe.png)
 
-
 I know that usage of unit testing is not that popular in embedded software, but I encourage you to try it! A good starting point is this book: [](https://amzn.to/30S1k0W)
 
 This will greatly help you to reduce the amount of on target testing you need to do.
