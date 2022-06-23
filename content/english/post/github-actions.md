@@ -23,7 +23,7 @@ I know that usage of unit testing is not that popular in embedded software, but 
 
 This will greatly help you to reduce the amount of on target testing you need to do.
 
-Another way to limit the number of on target test is to use a simulator, there is more and more options every year, for example, [Benjamin Cabé](https://twitter.com/kartben) made me discover [](https://renode.io/) which is quite useful for micro-controller targets
+Another way to limit the number of on target test is to use a simulator, there is more and more options every year, for example, [Benjamin Cabé](https://twitter.com/kartben) made me discover [Renode](https://renode.io/) which is quite useful for micro-controller targets
 
 That said, you still need to run a handful of tests on your targeted device. At minimum, a couple of acceptance tests. And running this kind of test is looong because you need to reboot, flash, reboot, wait the system to be up, test, maybe retry because your network is flaky.
 
