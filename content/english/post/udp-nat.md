@@ -1,6 +1,6 @@
 +++
 author = "Julien Vermillard"
-title = "CoAP and Lightweight M2M chalenges with NAT gateways"
+title = "CoAP and Lightweight M2M challenges with NAT gateways"
 tags = [ "Internet-of-Things", "UDP", "CoAP", "LPWA"]
 date = "2022-09-07"
 +++
