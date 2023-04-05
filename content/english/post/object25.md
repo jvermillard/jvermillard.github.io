@@ -72,7 +72,10 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
                 if (response != null && response.isSuccess()) {
                     LOG.debug("read /25 response: {}", response.getContent());
                     try {
-                        registerObject25(registration, response, gatewayRegUpdate);
+                        LwM2mObject object25 = (LwM2mObject) response.getContent();
+                        object25.getInstances().forEach((id, objectInstance25) -> {
+                            registerObject25Instance(registration, objectInstance25, gatewayRegUpdate);
+                        });
                     } catch (RuntimeException e) {
                         LOG.error("Error while processing object 25 value", e);
                     }
@@ -80,20 +83,6 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
             }, (e) -> {
                 LOG.warn("Invalid response to read object 25 for device '{}': '{}'", registration.getEndpoint(), e.getMessage());
             });
-        }
-    }
-
-    private void registerObject25(Registration registration, ReadResponse response, RegistrationUpdate gatewayRegUpdate) {
-        if (response.getContent() instanceof LwM2mObject) {
-            LwM2mObject object25 = (LwM2mObject) response.getContent();
-            object25.getInstances().forEach((id, objectInstance25) -> {
-                registerObject25Instance(registration, objectInstance25, gatewayRegUpdate);
-            });
-        } else if (response.getContent() instanceof LwM2mObjectInstance) {
-            LwM2mObjectInstance objectInstance25 = (LwM2mObjectInstance) response.getContent();
-            registerObject25Instance(registration, objectInstance25, gatewayRegUpdate);
-        } else {
-            LOG.error("Unknown response content of type: {}", response.getContent().getClass().getName());
         }
     }
 
