@@ -97,13 +97,8 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
             LOG.warn("Invalid device ID, prefix, or IoT Device Objects, gateway '{}', object25 instance: '{}'", registration.getEndpoint(), objectInstance25);
             return;
         }
-
-        if (iotDeviceObjects.length == 0) {
-            // skip device with no object, it's not allowed, but can happen if the device is not totally initialized
-            LOG.debug("skipping registration for device '{}' on gateway '{}' because it's object list is empty", deviceId, registration.getEndpoint());
-            return;
-        }
         prefix = prefix.replaceAll("/", "");
+
         // add a new endpoint
         LOG.debug("Adding endpoint '{}'", deviceId);
 
