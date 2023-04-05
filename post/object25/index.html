@@ -88,8 +88,6 @@ How does it work in practice?</p><p><img src=/images/gateway.png alt="LWM2M gate
 </span></span><span class=line><span class=cl>        <span class=o>}</span>
 </span></span><span class=line><span class=cl>        <span class=n>prefix</span> <span class=o>=</span> <span class=n>prefix</span><span class=o>.</span><span class=na>replaceAll</span><span class=o>(</span><span class=s>&#34;/&#34;</span><span class=o>,</span> <span class=s>&#34;&#34;</span><span class=o>);</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        <span class=c1>// add a new endpoint
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>LOG</span><span class=o>.</span><span class=na>debug</span><span class=o>(</span><span class=s>&#34;Adding endpoint &#39;{}&#39;&#34;</span><span class=o>,</span> <span class=n>deviceId</span><span class=o>);</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>        <span class=c1>// we decide if it&#39;s a registration update only if the information didn&#39;t changed
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>gatewayRegUpdate</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
@@ -99,6 +97,8 @@ How does it work in practice?</p><p><img src=/images/gateway.png alt="LWM2M gate
 </span></span><span class=line><span class=cl>                <span class=k>return</span><span class=o>;</span>
 </span></span><span class=line><span class=cl>            <span class=o>}</span>
 </span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// add a new endpoint
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>LOG</span><span class=o>.</span><span class=na>debug</span><span class=o>(</span><span class=s>&#34;Adding endpoint &#39;{}&#39;&#34;</span><span class=o>,</span> <span class=n>deviceId</span><span class=o>);</span>
 </span></span><span class=line><span class=cl>        <span class=n>server</span><span class=o>.</span><span class=na>registerEndIotDevice</span><span class=o>(</span><span class=n>registration</span><span class=o>.</span><span class=na>getId</span><span class=o>(),</span> <span class=n>deviceId</span><span class=o>,</span> <span class=n>prefix</span><span class=o>,</span> <span class=n>iotDeviceObjects</span><span class=o>);</span>
 </span></span><span class=line><span class=cl>    <span class=o>}</span>
 </span></span><span class=line><span class=cl><span class=o>}</span>
