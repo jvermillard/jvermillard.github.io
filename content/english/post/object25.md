@@ -42,8 +42,6 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
 
     private final LeshanServer server;
 
-    private final LinkSerializer linkSerializer = new DefaultLinkSerializer();
-
     public GatewayRegistrationHandler(LeshanServer server) {
         this.server = server;
     }
