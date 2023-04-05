@@ -65,27 +65,6 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
     }
 
     private void readGatewayUpdates(Registration registration, RegistrationUpdate gatewayRegUpdate) {
-        var objs = new HashMap<Integer,RegistrationObject>();
-
-        for (var entry : registration.getSupportedObject().entrySet()) {
-            var instanceList = registration.getAvailableInstances().stream().filter(i -> i.getObjectId().intValue() == entry.getKey().intValue()).map(path -> path.getObjectInstanceId()).collect(Collectors.toList());
-            objs.put(entry.getKey(), new RegistrationObject(entry.getValue().toString(), instanceList));
-        }
-
-        String gateway = null;
-        String prefix = null;
-
-        // end iot device/gateway relationship
-        if (registration.getGatewayRegId() != null) {
-            var gwReg = server.getRegistrationService().getById(registration.getGatewayRegId());
-            if (gwReg == null) {
-                LOG.error("end iot device '{}' pointing to unknown gateway registration id '{}'", registration.getEndpoint(), registration.getGatewayRegId());
-            } else {
-                gateway = gwReg.getEndpoint();
-                prefix = registration.getGatewayPrefix().replaceAll("/", "");
-            }
-        }
-
         if (registration.getSupportedObject().get(25) != null) {
             // read and register end iot devices supported by this gateway
             var readRequest = new ReadRequest(25);
@@ -99,12 +78,7 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
                     }
                 }
             }, (e) -> {
-                if (e instanceof InvalidResponseException) {
-                    LOG.warn("Invalid response to read object 25 for device '{}': '{}'",
-                            registration.getEndpoint(), e.getMessage());
-                } else {
-                    LOG.error("LWM2M error", x);
-                }
+                LOG.warn("Invalid response to read object 25 for device '{}': '{}'", registration.getEndpoint(), e.getMessage());
             });
         }
     }
@@ -112,7 +86,6 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
     private void registerObject25(Registration registration, ReadResponse response, RegistrationUpdate gatewayRegUpdate) {
         if (response.getContent() instanceof LwM2mObject) {
             LwM2mObject object25 = (LwM2mObject) response.getContent();
-            LOG.debug("object {}", object25);
             object25.getInstances().forEach((id, objectInstance25) -> {
                 registerObject25Instance(registration, objectInstance25, gatewayRegUpdate);
             });
