@@ -99,8 +99,6 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
         }
         prefix = prefix.replaceAll("/", "");
 
-        // add a new endpoint
-        LOG.debug("Adding endpoint '{}'", deviceId);
 
         // we decide if it's a registration update only if the information didn't changed
         if (gatewayRegUpdate != null) {
@@ -110,6 +108,8 @@ So by default, in Leshan, we do nothing. In the user server code, I added a regi
                 return;
             }
         }
+        // add a new endpoint
+        LOG.debug("Adding endpoint '{}'", deviceId);
         server.registerEndIotDevice(registration.getId(), deviceId, prefix, iotDeviceObjects);
     }
 }
