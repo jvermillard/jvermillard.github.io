@@ -19,51 +19,51 @@ animated fadeInDown"><div class=sidebar__content><div class=sidebar__introductio
 <span aria-hidden=true class=navbar-burger__line></span></a><nav class=nav><ul class=nav__list id=navMenu><li class=nav__list-item><a href=/ title>Home</a></li><li class=nav__list-item><a href=/post/ title>Posts</a></li><li class=nav__list-item><a href=/portfolio/ title>Portfolio</a></li><li class=nav__list-item><a href=/publicspeaking/ title>Public Speaking</a></li></ul><ul class="nav__list nav__list--end"><li class=nav__list-item><div class=themeswitch><a title="Switch Theme"><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></li></ul></nav></div></header><div class="post
 animated fadeInDown"><div class=post__content><h1>Life and Death of Java Asynchronous Network Programming</h1><ul class=post__meta><li class=post__meta-item><em class="fas fa-calendar-day post__meta-icon"></em>
 <span class=post__meta-text>18/8/2024</span></li><li class=post__meta-item><em class="fas fa-stopwatch post__meta-icon"></em>
-<span class=post__meta-text>9-minute read</span></li></ul><p>Network programming in Java has changed significantly over the last 20+ years. Mainly driven by the desire to handle larger loads by an ever-increasing number of connections.</p><p>In Java, the journey started with synchronous programming, using one thread per connection (to a server or a connected client). The principal limit was memory because each thread cost approximately half a megabyte (maybe less with some tuning).</p><p>This would look like:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>import java.io.*;
-</span></span><span class=line><span class=cl>import java.net.*;
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>public class SimpleTcpServer {
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public static void main(String[] args) {
-</span></span><span class=line><span class=cl>        int port = 1234;
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>        ServerSocket serverSocket = new ServerSocket(port);
-</span></span><span class=line><span class=cl>        while (true) {
-</span></span><span class=line><span class=cl>           // Accept a new client connection
-</span></span><span class=line><span class=cl>           Socket clientSocket = serverSocket.accept();
-</span></span><span class=line><span class=cl>           System.out.println(&#34;New connection from &#34; + clientSocket.getInetAddress().getHostAddress());
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>           // Start a new thread to handle the connection
-</span></span><span class=line><span class=cl>           new Thread(new ClientHandler(clientSocket)).start();
-</span></span><span class=line><span class=cl>       }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>class ClientHandler implements Runnable {
-</span></span><span class=line><span class=cl>    private final Socket clientSocket;
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public ClientHandler(Socket clientSocket) {
-</span></span><span class=line><span class=cl>        this.clientSocket = clientSocket;
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    @Override
-</span></span><span class=line><span class=cl>    public void run() {
-</span></span><span class=line><span class=cl>        try {
-</span></span><span class=line><span class=cl>            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-</span></span><span class=line><span class=cl>            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-</span></span><span class=line><span class=cl>            String message;
-</span></span><span class=line><span class=cl>            while ((message = in.readLine()) != null) {
-</span></span><span class=line><span class=cl>                System.out.println(&#34;Received: &#34; + message);
-</span></span><span class=line><span class=cl>                out.println(&#34;Echo: &#34; + message);
-</span></span><span class=line><span class=cl>            }
-</span></span><span class=line><span class=cl>        } catch (IOException e) {
-</span></span><span class=line><span class=cl>            e.printStackTrace();
-</span></span><span class=line><span class=cl>        } finally {
-</span></span><span class=line><span class=cl>            clientSocket.close();
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span></code></pre></div><p>At the time (early 2000s), I was working on monitoring appliances running on 64 MB of RAM. The one thread per connection model worked fine until a new project arrived: I needed to connect to 1k IP devices to monitor them, and the classical one thread per connection model consumed twenty times more memory than I could afford.</p><h2 id=the-c10k-problem>The C10K Problem</h2><p>The C10K problem emerged in the late 1990s, highlighting the server’s challenge in handling more than 10,000 TCP connections. We started to see different proposals to change or evolve the traditional network programming model. The main idea was to remove the reliance on threads to reduce memory consumption and the massive performance impact of context switching.</p><p>See:
+<span class=post__meta-text>9-minute read</span></li></ul><p>Network programming in Java has changed significantly over the last 20+ years. Mainly driven by the desire to handle larger loads by an ever-increasing number of connections.</p><p>In Java, the journey started with synchronous programming, using one thread per connection (to a server or a connected client). The principal limit was memory because each thread cost approximately half a megabyte (maybe less with some tuning).</p><p>This would look like:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>SimpleTcpServer</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>1234</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ServerSocket</span><span class=w> </span><span class=n>serverSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ServerSocket</span><span class=p>(</span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=c1>// Accept a new client connection</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>accept</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;New connection from &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getInetAddress</span><span class=p>().</span><span class=na>getHostAddress</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=c1>// Start a new thread to handle the connection</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>ClientHandler</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>)).</span><span class=na>start</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>       </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>ClientHandler</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Runnable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=nf>ClientHandler</span><span class=p>(</span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>clientSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clientSocket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Override</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>((</span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>())</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Received: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Echo: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><p>At the time (early 2000s), I was working on monitoring appliances running on 64 MB of RAM. The one thread per connection model worked fine until a new project arrived: I needed to connect to 1k IP devices to monitor them, and the classical one thread per connection model consumed twenty times more memory than I could afford.</p><h2 id=the-c10k-problem>The C10K Problem</h2><p>The C10K problem emerged in the late 1990s, highlighting the server’s challenge in handling more than 10,000 TCP connections. We started to see different proposals to change or evolve the traditional network programming model. The main idea was to remove the reliance on threads to reduce memory consumption and the massive performance impact of context switching.</p><p>See:
 <a href=http://www.kegel.com/c10k.html>http://www.kegel.com/c10k.html</a>
 <a href=https://en.wikipedia.org/wiki/C10k_problem>https://en.wikipedia.org/wiki/C10k_problem</a></p><h2 id=the-advent-of-nio-java-14>The Advent of NIO (Java 1.4)</h2><p>In light of the problem raised by the C10K problem, Java 1.4 (released in 2002) introduced the New Input/Output (NIO) library, providing a non-blocking I/O model that significantly improved scalability. NIO allowed multiple connections (called Channels) to be managed by a single thread using selectors. Selectors would generate events when a connection is ready to be read (e.g., some data was received and buffered by the kernel), prepared to be written, or closed. The programming model changed from blocking synchronous threads to an event-driven one.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// over simplified NIO event loop example:</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Selectot</span><span class=w> </span><span class=n>selector</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Selector</span><span class=p>.</span><span class=na>open</span><span class=p>();</span><span class=w>
