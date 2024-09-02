@@ -3,8 +3,8 @@ author = "Julien Vermillard"
 title = "IoT Traffic capture and analysis on AWS"
 tags = [ "AWS", "Cloud", "Networking"]
 date = "2024-09-02"
+images = ["/images/capture-banner.png"]
 +++
-
 ![Network Traffic Capture banner](/images/capture-banner.png)
 
 I work with different IoT protocols and their embedded clients every day, and troubleshooting product issues in the field can be tricky. When the steps to reproduce a problem aren’t clear, I like to capture the traffic during the issue. This helps me see what’s actually happening and how the client and server are interacting.
@@ -18,7 +18,7 @@ One solution I started to use within AWS environments is mirroring VPC network t
 
 In a nutshell, VXLAN is a protocol that encapsulates Ethernet frames in UDP packets. It’s used for various tasks, like extending virtual networks or VPNs. In our case, the AWS traffic mirror uses it to capture and transfer network packets to another network interface.
 
-![AWS traffic Mirrior](/images/aws-traffic-mirror.png)
+![AWS traffic Mirror](/images/aws-traffic-mirror.png)
 
 Now we receive the traffic on a machine. Before doing any analysis, we want to archive some of the traffic. The idea is to be able to look back in time to find the network traces of when a bug occurred.
 
